@@ -11,7 +11,7 @@ debug = True
 
 ConsumerKey    = 'vcW8YNiBaHZkBFyR0M26g'
 ConsumerSecret = 'AO0s6QwnIo5KXfgAq4I85fU6aGv6xvZDd22SjAoRQFw'
-waitTime = 3600
+waitTime = 87
 auth = tweepy.OAuthHandler(ConsumerKey, ConsumerSecret)
 mutex = threading.Lock()
 	
@@ -58,7 +58,7 @@ def FollowUser(user):
 		mutex.acquire()
 		user.follow()
 		mutex.release()
-		time.sleep(5) #Wait 5 seconds before following new user
+		time.sleep(waitTime) #Wait 5 seconds before following new user
 		return True
 	except tweepy.error.TweepError as e:
 		mutex.release()
@@ -89,7 +89,7 @@ def FollowEveryOne(user, level = 0):
 		else:
 			mutex.release()
 			print "Lets wait 24 hours..."
-			time.sleep(waitTime * 24) # Twitter limit :(
+			time.sleep(waitTime * 1000) # Twitter limit :(
 			print "Continuing"
 
 tweetThread = threading.Thread(target = ReportAboutPutilBalls)
@@ -100,5 +100,5 @@ followThread.start()
 
 print 'Waiting for finish'
 for t in threading.enumerate():
-	if t is not threading.currendThread():
+	if t is not threading.currentThread():
 		t.join()
