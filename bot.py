@@ -8,7 +8,7 @@ import random
 import threading
 
 debug = True
-
+hashTag = u' #ДетекторЧесотки'
 ConsumerKey    = 'vcW8YNiBaHZkBFyR0M26g'
 ConsumerSecret = 'AO0s6QwnIo5KXfgAq4I85fU6aGv6xvZDd22SjAoRQFw'
 waitTime = 87
@@ -39,7 +39,9 @@ def ReportAboutPutilBalls():
 			ball = u'левое'
 		else:
 			ball = u'правое'
-		tweet = u'У Путина зачесалось ' + ball + u' яйцо! ' + str(random.randint(0, 10000000000))
+		tweet = u'У Путина зачесалось ' + ball + u' яйцо! ' 
+		tweet += str(random.randint(0, 10000000000000))
+		tweet += hashTag
 		try:
 			mutex.acquire()	
 			api.update_status(tweet)
@@ -56,9 +58,14 @@ def FollowUser(user):
 	print 'Trying to follow @' + user.screen_name
 	try:
 		mutex.acquire()
+		if api.exists_friendship(api.me().id, user.id):
+			print 'Can not create friendship because @' + user.screen_name + 'is already in followers list'
+			mutex.release()
+			return True
 		user.follow()
+		print 'Done: @' + user.screen_name
 		mutex.release()
-		time.sleep(waitTime) #Wait 5 seconds before following new user
+		time.sleep(waitTime - 5)
 		return True
 	except tweepy.error.TweepError as e:
 		mutex.release()
@@ -69,7 +76,7 @@ def FollowUser(user):
 def FollowEveryOne(user, level = 0):
 	print 'Following followers of @' + user.screen_name + ' at level ' + str(level)
 	followedPeopleCount = 0
-	if level > 5:
+	if level > 10:
 		return
 	while True:
 		if followedPeopleCount < 1000:
